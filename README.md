@@ -24,8 +24,8 @@ The goals / steps of this project are the following:
 [image3]: ./examples/binary_combo_example.jpg "Binary Example"
 [image4]: ./output_images/road_original.png "Road Warp Points"
 [image5]: ./examples/color_fit_lines.jpg "Fit Visual"
-[image6]: ./examples/example_output.jpg "Output"
-[video1]: ./project_video.mp4 "Video"
+[image6]: ./output_images/marked_lane.png "Output"
+[video1]: ./output_images/test_output.avi "Video"
 [image7]: ./output_images/calibration1_distort.png "Distorted"
 [image8]: ./output_images/road_warped.png "Road Warped"
 [image9]: ./output_images/road_unwarped.png "Road Unwarp"
@@ -127,7 +127,7 @@ I did this in lines # through # in my code in `my_other_file.py`
 
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
+I created a function called `visualize_lanes` that generates a mask that can be plotted back over each video frame to show the detected lane line. While actually does not do anything to aid detection, it provides visual confirmation for debugging and seeing where the current tracking algorithm works and fails:
 
 ![alt text][image6]
 
@@ -137,7 +137,7 @@ I implemented this step in lines # through # in my code in `yet_another_file.py`
 
 #### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
 
-Here's a [link to my video result](./project_video.mp4)
+Here's a [link to my video result](./output_images/test_output.avi)
 
 ---
 
