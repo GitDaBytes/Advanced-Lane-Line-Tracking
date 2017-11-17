@@ -55,11 +55,11 @@ Once we have done this for each image, we can pass these values into `cv2.calibr
 
 Below is an example of an original distorted image, and another that has been rectified / undistorted.
 
-Original (distorted) image:
+##### Original (distorted) image:
 
 ![alt text][image7]
 
-Undistorted  / corrected image:
+##### Undistorted  / corrected image:
 
 ![alt text][image1]
 
@@ -107,13 +107,13 @@ This resulted in the following source and destination points:
 
 I checked all was working as expected by drawing target points on the original image, then using `warpPerspective` to make sure I got an image of two parallel road lines. Finally I warped that image back to the original driver view.
 
-* Original image with selected points marked:
+##### Original image with selected points marked:
 ![alt text][image4]
 
-* Image warped to top down view:
+##### Image warped to top down view:
 ![alt text][image8]
 
-* Top down image warped back to original driver view:
+##### Top down image warped back to original driver view:
 ![alt text][image9]
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
