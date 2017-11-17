@@ -29,6 +29,7 @@ The goals / steps of this project are the following:
 [image7]: ./output_images/calibration1_distort.png "Distorted"
 [image8]: ./output_images/road_warped.png "Road Warped"
 [image9]: ./output_images/road_unwarped.png "Road Unwarp"
+[image10]: ./radiusCurvature1.png "Radius Curvature"
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
 
@@ -123,7 +124,18 @@ Then I did some other stuff and fit my lane lines with a 2nd order polynomial ki
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-I did this in lines # through # in my code in `my_other_file.py`
+I created a function called `calculate_lane_radius` to calculate both radius of the curve and lane positioning.
+
+##### Lane Position
+First of all, I use polynomials created in step 4 to determine the left and right lane positions at the bottom of the image (closest to the car). I average the position of the two lane lines to give me the center of the two lines. I can then compare the middle point of the two lane lines to the middle of the image to tell me where the middle of the car is with respect to the middle of the road. The answer is in pixels, so I convert this to meters, by assuming the distance between the two lane line is a fixed 3.7 meters, and using the pixel distance between the two lane lines to derive a pixel to meter ratio which I can then use to scale up my vehicle position offset to meters.
+
+##### Lane Curvature
+
+Next I use the two polynomials (based in pixel space) found in step 4 as my true lane position, and generate a new polynomial in world space by multiplying up by using the same pixel to meter ratios as described above. Once I have this, I calculate the radius of the curvature at the y position closest to the car (the bottom of the image) using the formula given here: https://www.intmath.com/applications-differentiation/8-radius-curvature.php
+
+From the link above, they provide an excellent diagram that shows what we are trying to accomplish, which is to approximate the size of a circle at a given point on our curve (for us, this is the point closest to the car). Once we have that we can calculate the radius of that circle (the radius of the 'curve').
+
+![alt text][image10]
 
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
