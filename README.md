@@ -21,9 +21,9 @@ The goals / steps of this project are the following:
 
 [image1]: ./output_images/calibration1_undistort.png "Undistorted"
 [image2]: ./output_images/test_undistort.png "Road Transformed"
-[image3]: ./examples/binary_combo_example.jpg "Binary Example"
+[image3]: ./output_images/color_filtered.png "Binary Example"
 [image4]: ./output_images/road_original.png "Road Warp Points"
-[image5]: ./examples/color_fit_lines.jpg "Fit Visual"
+[image5]: ./output_images/color_fit_lines.jpg "Fit Visual"
 [image6]: ./output_images/marked_lane.png "Output"
 [video1]: ./output_images/test_output.avi "Video"
 [image7]: ./output_images/calibration1_distort.png "Distorted"
@@ -73,7 +73,38 @@ The next thing I tried was to load an image of a road scene taken with the same 
 
 #### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 
-I used a combination of color and gradient thresholds to generate a binary image (thresholding steps at lines # through # in `another_file.py`).  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
+I tried many different permutations of sobel filters, color gradients and combinations therof. I did originally expect that computing sobel in the x direction would yield the best result. While this was pretty good at identifying lane lines, I found that it did pick up other artifacts too.
+
+After much deliberation, I decided that the color was the main thing that identified the lane line as a lane line. I then transformed my image into the HSV color space to make it easier to segment out the colors, and saturation within specific ranges. This was performed with the function `filter_colors_hsv` below:
+
+```python
+def filter_colors_hsv(img):
+    """
+    Convert image to HSV color space and suppress any colors
+    outside of the defined color ranges
+    """
+    hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
+    
+    yellow_dark = np.array([15, 70, 150], dtype=np.uint8)
+    yellow_light = np.array([40, 255, 255], dtype=np.uint8)
+    yellow_range = cv2.inRange(hsv, yellow_dark, yellow_light)
+
+    white_dark = np.array([0, 0, 200], dtype=np.uint8)
+    white_light = np.array([255, 30, 255], dtype=np.uint8)
+    white_range = cv2.inRange(hsv, white_dark, white_light)
+    
+    yellows_or_whites = yellow_range | white_range
+    
+    output = cv2.bitwise_and(img, img, mask=yellows_or_whites)
+    
+   
+    return output
+```
+
+Surprisingly to me, this also yielded mixed results. Especially where there were color changes in the road. In order to reduce this effect, I found online an example of equalizing the color space using the LAB color space. I thus first equalize the colorspace to give a more uniform color no matter whether there are shadows or bright light, and then perform the color segmentation as above. 
+
+During color segmentation I try to eliminate all pixels except those falling in the white and yellow spectrums (I define these quite losely to allow for changes in line color along the road). This segmentation seemed to work well.
+
 
 ![alt text][image3]
 
@@ -118,7 +149,17 @@ I checked all was working as expected by drawing target points on the original i
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
-Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
+In order to identify where the lane lines are in my now filtered image, I wrote a class called `LaneLineMetrics`. The basic idea is to fit a second order polynomial for each of the left right lanes. 
+
+To do this we first break the image into 9 vertical slices from bottom to top. Defining windows to be the height of one slice with a width of 80 pixels
+
+If we have not detected a lane line previously, we start by discarding the top half of our image, and then identify the x position with the most pixels in the left half of the image as the start of the left lane, and then do the same for the right half for the right lane. This is the start of our search. We then walk up each lane line vertical slice by slice, looking for lane pixels, if we find enough (around 50 pixels in our window) we recenter the window on those pixels and move up to the next vertical slice.
+
+Once we have walked the whole height of the image, we then use `np.fitpoly` to fit a second order polynomial to the detected pixel indices that represent lane lines.
+
+For the next frame of the video, assuming that we have now found the left and right lanes in the previous frame, we can use the found second order polynomial to position the search windows ready for the next iteration. I found this enabled me to narrow my search window size and make my detections more accurate.
+
+The image below (from Udacity) illustrates the general concept:
 
 ![alt text][image5]
 
@@ -157,4 +198,6 @@ Here's a [link to my video result](./output_images/test_output.avi)
 
 #### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+Overall, I think the solution works pretty well for the project video. It is quite tricky to use standard video processing techniques to segment the road lines from the road, especially with all the debris and patterns that appear on the road (most of which are also lines). 
+
+I believe that the method I have used will have a hard time at night as well as in very bright or dark scenes and also on very bendy roads. I beleive that in order to address this, more work is needed to be done on the lane detection part of my project. I would be very keen to also experiment with neural networks (particulary CNNs) to see if it can create a more robust and universal lane detector.
