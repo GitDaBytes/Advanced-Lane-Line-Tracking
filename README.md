@@ -180,7 +180,7 @@ From the link above, they provide an excellent diagram that shows what we are tr
 
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-I created a function called `visualize_lanes` that generates a mask that can be plotted back over each video frame to show the detected lane line. While actually does not do anything to aid detection, it provides visual confirmation for debugging and seeing where the current tracking algorithm works and fails:
+I created a function called `visualize_lanes` that generates a mask that can be plotted back over each video frame to show the detected lane line. While this actually does not do anything to aid detection, it provides visual confirmation for debugging and seeing where the current tracking algorithm works and fails:
 
 ![alt text][image6]
 
@@ -200,4 +200,4 @@ Here's a [link to my video result](./output_images/test_output.avi)
 
 Overall, I think the solution works pretty well for the project video. It is quite tricky to use standard video processing techniques to segment the road lines from the road, especially with all the debris and patterns that appear on the road (most of which are also lines). 
 
-I believe that the method I have used will have a hard time at night as well as in very bright or dark scenes and also on very bendy roads. I beleive that in order to address this, more work is needed to be done on the lane detection part of my project. I would be very keen to also experiment with neural networks (particulary CNNs) to see if it can create a more robust and universal lane detector.
+I believe that the method I have used will have a hard time at night as well as in very bright or dark scenes and also on very bendy roads. I believe that in order to address this, more work is needed to be done on the lane detection part of my project. I would be very keen to also experiment with neural networks (particulary CNNs) to see if it can create a more robust and universal lane detector.
